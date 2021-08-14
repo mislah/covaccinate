@@ -2,24 +2,27 @@ var script = document.createElement('script');
 script.src = 'https://code.jquery.com/jquery-3.6.0.js';
 document.getElementsByTagName('head')[0].appendChild(script);
 
-var tom = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
-tom = String(tom.getDate()).padStart(2, '0') + '-' + String((tom.getMonth() + 1)).padStart(2, '0') + '-' + tom.getFullYear();
-
-var cList = ["ABC HOSPITAL", "MNO PHC"]; //Should be in Capital letters
-var cRefID = ["98765432109876"];    // Reference ID, Login to see
+var cList = ["ABC HOSPITAL", "PQR CENTER"]; //List of centers
+var cRefID = ["12345678901234"];    // Reference ID, Login to see
 var cVacc = "COVISHIELD";           // "COVAXIN" or  "COVISHIELD"
-var cDate = tom;                    // tom for tomorrow or the date in the format "12-08-2021" with "
-var cSlot = 1;                      // Slot 1 for the first available slot
+var cDate = tod(1);                 // 0 for today, 1 for tomorrow, and so on 
+var cSlot = 1;                      // Slot 1 gives the first available slot, usually 9:00 to 11:00
 var cDose = 1;                      // Dose 1 or 2
-var cMin = 18;                      // 45 if older than 45 else use 18
-var cDist = 305;                    // District code
+var cAge = 18;                      // Age
+var cDist = 241;                    // District Code
 
 runScript();
 
+function tod(add = 0) {
+    var dat = new Date(new Date().getTime() + 24 * 60 * 60 * 1000 * add);
+    return String(dat.getDate()).padStart(2, '0') + '-' + String((dat.getMonth() + 1)).padStart(2, '0') + '-' + dat.getFullYear();
+}
+
 function runScript() {
+    cList = cList.map(a => a.toUpperCase());
     if (window.$) {
         jQuery.noConflict();
-        api = 'https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id=' + cDist + '&date=' + tom;
+        api = 'https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id=' + cDist + '&date=' + tod();
         isStarted(api);
         interval = setInterval(function Req0() {
             isStarted(api);
@@ -55,13 +58,14 @@ function isAvailable(api) {
                         else if (cDose == 2) {
                             dose = center[i].sessions[j].available_capacity_dose2;
                         }
-                        if (center[i].sessions[j].date === cDate && dose) {
-                            if (center[i].sessions[j].min_age_limit >= cMin && center[i].sessions[j].vaccine == cVacc) {
-                                bookSlot(center[i], j);
-                                clearInterval(interval);
-                                stop = true;
-                                break;
-                            }
+                        if (cAge < 45 && center[i].sessions[j].min_age_limit == 45) {
+                            continue;
+                        }
+                        if (center[i].sessions[j].date === cDate && center[i].sessions[j].vaccine == cVacc && dose) {
+                            bookSlot(center[i], j);
+                            clearInterval(interval);
+                            stop = true;
+                            break;
                         }
                     }
                 }
@@ -70,7 +74,7 @@ function isAvailable(api) {
                 }
             }
         });
-    }, 3000);
+    }, 1000);
 }
 
 function bookSlot(data, j) {
@@ -90,7 +94,6 @@ function bookSlot(data, j) {
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
         success: function (data) {
-            console.log("Success!");
             window.location = "https://selfregistration.cowin.gov.in/dashboard";
         },
     });
