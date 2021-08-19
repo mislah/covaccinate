@@ -2,14 +2,14 @@ var script = document.createElement('script');
 script.src = 'https://code.jquery.com/jquery-3.6.0.js';
 document.getElementsByTagName('head')[0].appendChild(script);
 
-var cList = ["ABC HOSPITAL", "PQR CENTER"]; //List of centers
+var cList = ["ABC Hospital", "PQR PHC"]; //List of centers
 var cRefID = ["12345678901234"];    // Reference ID, Login to see
 var cVacc = "COVISHIELD";           // "COVAXIN" or  "COVISHIELD"
 var cDate = tod(1);                 // 0 for today, 1 for tomorrow, and so on 
 var cSlot = 1;                      // Slot 1 gives the first available slot, usually 9:00 to 11:00
 var cDose = 1;                      // Dose 1 or 2
 var cAge = 18;                      // Age
-var cDist = 241;                    // District Code
+var cDist = 202;                    // District Code
 
 runScript();
 
@@ -23,29 +23,14 @@ function runScript() {
     if (window.$) {
         jQuery.noConflict();
         api = 'https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id=' + cDist + '&date=' + tod();
-        isStarted(api);
-        interval = setInterval(function Req0() {
-            isStarted(api);
-        }, 5000);
+        scanSlots(api);
     }
     else {
-        window.setTimeout(runScript, 2000);
+        window.setTimeout(runScript, 500);
     }
 }
 
-function isStarted(api) {
-    jQuery.getJSON(api, function (data) {
-        for (i in data.centers) {
-            if (data.centers[i].fee_type === "Free") {
-                clearInterval(interval);
-                isAvailable(api);
-            }
-        }
-    });
-}
-
-function isAvailable(api) {
-    var stop = false;
+function scanSlots(api) {
     interval = setInterval(function Req1() {
         jQuery.getJSON(api, function (center) {
             center = center.centers;
@@ -63,18 +48,13 @@ function isAvailable(api) {
                         }
                         if (center[i].sessions[j].date === cDate && center[i].sessions[j].vaccine == cVacc && dose) {
                             bookSlot(center[i], j);
-                            clearInterval(interval);
-                            stop = true;
                             break;
                         }
                     }
                 }
-                if (stop) {
-                    break;
-                }
             }
         });
-    }, 1000);
+    }, 500);
 }
 
 function bookSlot(data, j) {
@@ -94,6 +74,7 @@ function bookSlot(data, j) {
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
         success: function (data) {
+            alert("Successfully booked vaccine!");
             window.location = "https://selfregistration.cowin.gov.in/dashboard";
         },
     });
