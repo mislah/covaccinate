@@ -1,0 +1,14 @@
+{
+
+  "manifest_version": 2,
+  "name": "reLoader",
+  "version": "1.0",
+
+  "content_scripts": [
+    {
+      "matches": ["https://selfregistration.cowin.gov.in/*"],
+      "js": ["reLoader.js"]
+    }
+  ]
+
+}
