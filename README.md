@@ -1,5 +1,4 @@
 # bookVaccine
-Simple javaScript injection for booking vaccine
 
 Read API guidelines in cowin website, do at your own risks
 
