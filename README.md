@@ -1,12 +1,14 @@
 # bookVaccine
 
-Read API guidelines in cowin website, do at your own risks
+Read API guidelines in cowin website.
+Don't take code if you can't understand it.
 
 License: 
-MIT + Me not liable for anything, you're free to take code iff you can understand it. For educational purposes only.
+MIT, For educational purposes only.
 
 To book vaccine:
-Prepare bookVaccine.js with your data => Login to cowin website => Inject the code to console
+Prepare bookVaccine.js with data => Login to cowin website => Inject the code to console
 
-If you want to reload the page and enter your mobile number automatically when current session expires:
-Give your number in reLoader.js => go to about:debugging in firefox (dunno how to do that in other browsers => Load temp addon => Show manifest.js to firefox
+To reload the page and enter mobile number automatically when current session expires:
+Firefox: Add your number in reLoader.js => go to about:debugging  => This firefox => Load temp addon => Show manifest.js to firefox
+Chrome : Add your number in reLoader.js => go to chrome://extensions/ => Toggle developer mode => Load unpacked => Show manifest.js to chrome
